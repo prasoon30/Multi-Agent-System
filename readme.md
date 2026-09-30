@@ -118,7 +118,3 @@ More specific topics produce better reports than broad ones.
 - The reader agent scrapes a single URL and keeps only the first 3,000 characters of the page.
 - Reports depend on search result quality and can contain errors, so verify important claims against the cited sources.
 - Some websites block scraping, in which case the reader returns an error message.
-
-## License
-
-Add a license of your choice (for example MIT) in a `LICENSE` file.
