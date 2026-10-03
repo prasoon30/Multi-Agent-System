@@ -7,10 +7,12 @@ from bs4 import BeautifulSoup
 from rich import print
 from tavily import TavilyClient
 import os
+import streamlit as st
 
 
-
-tavily = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
+tavily = TavilyClient(
+    api_key=st.secrets["TAVILY_API_KEY"]
+)
 
 
 @tool
