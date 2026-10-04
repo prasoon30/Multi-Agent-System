@@ -5,38 +5,37 @@ from langchain.agents import create_agent
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from tools import web_search , scrape_url
-
+from tools import web_search, scrape_url
 
 # model
-import os
-
-llm = ChatGroq(
-    model="openai/gpt-oss-20b",
-    temperature=0,
-    api_key=os.getenv("GROQ_API_KEY"),
-)
+llm = ChatGroq(model="openai/gpt-oss-20b", temperature=0)
 
 
 # 1st Agent
 def build_search_agent():
     return create_agent(
-        model = llm,
-        tools=[web_search]
+        model=llm,
+        tools=[web_search],
+        system_prompt=(
+            "You are a search agent. Always call the web_search tool. In your final answer, "
+            "list every result with its Title, full URL and a short snippet. Do not invent URLs."
+        ),
     )
 
 
-#2nd Agent
+# 2nd Agent
 def build_reader_agent():
     return create_agent(
-        model = llm,
-        tools = [scrape_url]
+        model=llm,
+        tools=[scrape_url],
+        system_prompt=(
+            "You are a reader agent. Always call the scrape_url tool on the single most relevant URL "
+            "from the search results, then summarise the scraped content and include the URL you used."
+        ),
     )
 
 
-#writer chain
-
-
+# writer chain
 writer_prompt = ChatPromptTemplate.from_messages([
     ("system", "You are an expert research writer. Write clear, structured and insightful reports."),
     ("human", """Write a detailed research report on the topic below.
@@ -57,10 +56,9 @@ Be detailed, factual and professional."""),
 
 writer_chain = writer_prompt | llm | StrOutputParser()
 
-#critic_chain 
-
+# critic chain
 critic_prompt = ChatPromptTemplate.from_messages([
-     ("system", "You are a sharp and constructive research critic. Be honest and specific."),
+    ("system", "You are a sharp and constructive research critic. Be honest and specific."),
     ("human", """Review the research report below and evaluate it strictly.
 
 Report:
