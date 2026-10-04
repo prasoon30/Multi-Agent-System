@@ -49,7 +49,7 @@ def run_pipeline_with_ui(topic: str) -> dict:
             "messages": [("user",
                 f"Based on the following search results about '{topic}', "
                 f"pick the most relevant URL and scrape it for deeper content.\n\n"
-                f"Search Results:\n{state['search_results'][:800]}"
+                f"Search Results:\n{state['search_results'][:2500]}"
             )]
         })
         state["scraped_content"] = reader_result["messages"][-1].content
@@ -137,9 +137,13 @@ topic = st.text_input(
     placeholder="e.g. Quantum computing breakthroughs in 2026",
 )
 
-run_clicked = st.button("🚀 Run research", type="primary", disabled=not topic.strip())
+# Not disabled when empty: text_input only commits on blur/Enter, so a disabled
+# button would swallow the first click after typing.
+run_clicked = st.button("🚀 Run research", type="primary")
 
-if run_clicked:
+if run_clicked and not topic.strip():
+    st.warning("Please enter a research topic first.")
+elif run_clicked:
     st.session_state.topic = topic.strip()
     st.session_state.state = None
     try:
@@ -188,3 +192,4 @@ if state:
 
     with tab_scrape:
         st.markdown(to_text(state["scraped_content"]))
+
